@@ -1,6 +1,6 @@
 import Vapor
 
-public enum CloudflareError: Error, AbortError {
+public enum CloudflareEmailError: Error, AbortError {
     case sendingFailed
     case noToAddresses
     case noContent
