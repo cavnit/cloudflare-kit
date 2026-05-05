@@ -1,6 +1,6 @@
 import Vapor
 
-public struct CloudflareAttachment: Sendable {
+public struct CloudflareEmailAttachment: Sendable {
     public let name: String
     public let type: String
     public let byteBuffer: ByteBuffer

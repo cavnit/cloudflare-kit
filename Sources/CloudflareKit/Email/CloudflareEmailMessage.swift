@@ -1,15 +1,15 @@
 import Vapor
 
-struct CloudflareMessage: Content {
-    let from: CloudflareAddressObject
+struct CloudflareEmailMessage: Content {
+    let from: CloudflareEmailAddressObject
     let to: [String]
     let cc: [String]?
     let bcc: [String]?
-    let replyTo: CloudflareAddressObject?
+    let replyTo: CloudflareEmailAddressObject?
     let subject: String
     let text: String?
     let html: String?
-    let attachments: [CloudflareAttachmentPayload]?
+    let attachments: [CloudflareEmailAttachmentPayload]?
 
     enum CodingKeys: String, CodingKey {
         case from
@@ -24,7 +24,7 @@ struct CloudflareMessage: Content {
     }
 }
 
-struct CloudflareAttachmentPayload: Content {
+struct CloudflareEmailAttachmentPayload: Content {
     let content: String
     let filename: String
     let type: String

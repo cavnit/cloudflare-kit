@@ -1,18 +1,18 @@
 import Foundation
 import Vapor
 
-public struct CloudflareClient: Sendable {
+public struct CloudflareEmailClient: Sendable {
     let client: any Client
     let logger: Logger
-    let configuration: CloudflareConfiguration
+    let configuration: CloudflareEmailConfiguration
 
     public func send(
         subject: String,
         htmlContent: String,
         textContent: String,
-        to: CloudflareAddress
+        to: CloudflareEmailAddress
     ) async throws {
-        let message: CloudflareMessage = CloudflareMessage(
+        let message: CloudflareEmailMessage = CloudflareEmailMessage(
             from: configuration.defaultFrom.toObject(),
             to: [to.toString()],
             cc: nil,
@@ -31,24 +31,24 @@ public struct CloudflareClient: Sendable {
         subject: String,
         htmlContent: String?,
         textContent: String?,
-        to: [CloudflareAddress],
-        cc: [CloudflareAddress] = [],
-        bcc: [CloudflareAddress] = [],
-        from: CloudflareAddress? = nil,
-        replyTo: CloudflareAddress? = nil,
-        withAttachments attachments: [CloudflareAttachment] = []
+        to: [CloudflareEmailAddress],
+        cc: [CloudflareEmailAddress] = [],
+        bcc: [CloudflareEmailAddress] = [],
+        from: CloudflareEmailAddress? = nil,
+        replyTo: CloudflareEmailAddress? = nil,
+        withAttachments attachments: [CloudflareEmailAttachment] = []
     ) async throws {
         guard to.count > 0 else {
-            throw CloudflareError.noToAddresses
+            throw CloudflareEmailError.noToAddresses
         }
         guard htmlContent != nil || textContent != nil else {
-            throw CloudflareError.noContent
+            throw CloudflareEmailError.noContent
         }
 
-        let fromAddress: CloudflareAddressObject = (from ?? configuration.defaultFrom).toObject()
+        let fromAddress: CloudflareEmailAddressObject = (from ?? configuration.defaultFrom).toObject()
 
-        let attachmentPayloads: [CloudflareAttachmentPayload]? = attachments.isEmpty ? nil : attachments.map {
-            CloudflareAttachmentPayload(
+        let attachmentPayloads: [CloudflareEmailAttachmentPayload]? = attachments.isEmpty ? nil : attachments.map {
+            CloudflareEmailAttachmentPayload(
                 content: Data(buffer: $0.byteBuffer, byteTransferStrategy: .automatic).base64EncodedString(),
                 filename: $0.name,
                 type: $0.type,
@@ -56,7 +56,7 @@ public struct CloudflareClient: Sendable {
             )
         }
 
-        let message: CloudflareMessage = CloudflareMessage(
+        let message: CloudflareEmailMessage = CloudflareEmailMessage(
             from: fromAddress,
             to: to.map { $0.toString() },
             cc: cc.isEmpty ? nil : cc.map { $0.toString() },
@@ -71,7 +71,7 @@ public struct CloudflareClient: Sendable {
         try await postMessage(message)
     }
 
-    private func postMessage(_ message: CloudflareMessage) async throws {
+    private func postMessage(_ message: CloudflareEmailMessage) async throws {
         let response: ClientResponse = try await client.post(
             URI(string: configuration.sendURL),
             headers: [:]
@@ -81,7 +81,7 @@ public struct CloudflareClient: Sendable {
         }
 
         if response.status != .created, response.status != .ok, response.status != .accepted {
-            throw CloudflareError.sendingFailed
+            throw CloudflareEmailError.sendingFailed
         }
     }
 }

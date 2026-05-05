@@ -1,6 +1,6 @@
 import Vapor
 
-public struct CloudflareAddress: Content, Sendable {
+public struct CloudflareEmailAddress: Content, Sendable {
     public let fullName: String
     public let email: String
 
@@ -13,12 +13,12 @@ public struct CloudflareAddress: Content, Sendable {
         return "\(fullName) <\(email)>"
     }
 
-    func toObject() -> CloudflareAddressObject {
-        return CloudflareAddressObject(address: email, name: fullName)
+    func toObject() -> CloudflareEmailAddressObject {
+        return CloudflareEmailAddressObject(address: email, name: fullName)
     }
 }
 
-struct CloudflareAddressObject: Content, Sendable {
+struct CloudflareEmailAddressObject: Content, Sendable {
     let address: String
     let name: String
 }
