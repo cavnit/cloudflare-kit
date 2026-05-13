@@ -20,7 +20,7 @@ public struct CloudflareR2Client: Sendable {
         )
 
         let response: ClientResponse = try await client.put(URI(string: signedURL.absoluteString)) { req in
-            req.headers.contentType = HTTPMediaType.fileExtension(contentType) ?? .binary
+            req.headers.replaceOrAdd(name: .contentType, value: contentType)
             req.body = data
         }
 
